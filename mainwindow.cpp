@@ -20,7 +20,7 @@ void MainWindow::initMenus()
 /*Create Actions*/
     newFileAction=new QAction(tr("&New"), this);
     newFileAction->setToolTip("Create a new file");
-    newFileAction->setStatusTip("wtf?");
+    newFileAction->setStatusTip("New Document");
     newFileAction->setIcon(QIcon(":/images/filenew.png"));
     newFileAction->setShortcut(QKeySequence("Ctrl+N"));
     newFileAction->showStatusText(this->statusBar());
@@ -57,10 +57,6 @@ void MainWindow::initMenus()
     cutEditAction->setToolTip("Cut");
     cutEditAction->setIcon(QIcon(":/images/editcut.png"));
 
-    findEditAction=new QAction(tr("&Find"), this);
-    findEditAction->setToolTip("Find text and/or replace");
-    findEditAction->setIcon(QIcon(":/images/editfind.png"));
-
     toolEditAction=new QAction(tr("Tool &Bar"),this);
     toolEditAction->setIcon(QIcon(":/images/edittool.png"));
 
@@ -68,13 +64,7 @@ void MainWindow::initMenus()
     selectEditAction=new QAction(tr("Select All"),this);
     selectEditAction->setIcon(QIcon(":/images/editselect.png"));
 
-    undoEditAction=new QAction(tr("Undo"),this);
-    undoEditAction->setIcon(QIcon(":/images/editundo.png"));
-    undoEditAction->setEnabled(false);
 
-    redoEditAction=new QAction(tr("Redo"),this);
-    redoEditAction->setIcon(QIcon(":/images/editredo.png"));
-    redoEditAction->setEnabled(false);
 
     aboutHelpAction=new QAction(tr("&About"), this);
     aboutHelpAction->setToolTip("About this application");
@@ -83,7 +73,6 @@ void MainWindow::initMenus()
     connect(fontEditAction,SIGNAL(triggered()),this,SLOT(changeFont()));
     connect(exitFileAction,SIGNAL(triggered()),this,SLOT(close()));
     connect(aboutHelpAction,SIGNAL(triggered()),this,SLOT(aboutMe()));
-    connect(findEditAction,SIGNAL(triggered()),this,SLOT(findSlot()));
     connect(copyEditAction,SIGNAL(triggered()),textArea,SLOT(copy()));
     connect(cutEditAction,SIGNAL(triggered()),textArea,SLOT(cut()));
     connect(pasteEditAction,SIGNAL(triggered()),textArea,SLOT(paste()));
@@ -93,8 +82,6 @@ void MainWindow::initMenus()
     connect(newFileAction,SIGNAL(triggered()),this,SLOT(newFileSlot()));
     connect(saveAsFileAction,SIGNAL(triggered()),this,SLOT(saveAsFileSlot()));
     connect(textArea,SIGNAL(textChanged()),this,SLOT(isModified()));
-    connect(textArea,SIGNAL(undoAvailable(bool)),undoEditAction,SLOT(setEnabled(bool)));
-    connect(textArea,SIGNAL(redoAvailable(bool)),redoEditAction,SLOT(setEnabled(bool)));
     connect(textArea,SIGNAL(pasteAvailable(bool)),pasteEditAction,SLOT(setEnabled(bool)));
     toolEditAction->setCheckable(true);
     toolEditAction->setChecked(true);
@@ -112,9 +99,6 @@ void MainWindow::initMenus()
     editMenu->addAction(cutEditAction);
     editMenu->addAction(copyEditAction);
     editMenu->addAction(pasteEditAction);
-    editMenu->addAction(undoEditAction);
-    editMenu->addAction(redoEditAction);
-    editMenu->addAction(findEditAction);
     editMenu->addAction(selectEditAction);
     editMenu->addSeparator();
     editMenu->addAction(fontEditAction);
@@ -135,7 +119,6 @@ void MainWindow::initToolBars()
     toolBar->addAction(cutEditAction);
     toolBar->addAction(copyEditAction);
     toolBar->addAction(pasteEditAction);
-    toolBar->addAction(findEditAction);
     toolBar->addSeparator();
     toolBar->addAction(aboutHelpAction);
     toolBar->setVisible(true);
@@ -169,12 +152,20 @@ void MainWindow::updateTitle()
 
 void MainWindow::aboutMe(){
     QMessageBox::about(this,"About Me",
-                       "A TextEditor Application build in QT."
-                       "\nAll copyrights belong to Simarleen Singh");
+
+                      "TextEditor-QT"
+
+                      "\nTexteditor using QT"
+
+                      "\nIt's a simple TextEditor using QT (like Notepad) with C++. "
+
+                      "\nMinimal but complete functionality."
+
+                      "\nAll copyrights belong to Simarleen Singh & Shruti Jain");
 }
 void MainWindow::openFileSlot(){
     QString userFile=QFileDialog::getOpenFileName(this,"Open Document"
-                                 ,".","Text Files(*.txt *.rtf *.doc);;All Files(*.*)");
+                                 ,".","Text Files(*.txt *.rtf *.doc *.cpp);;All Files(*.*)");
     bool res=fileOperate(userFile,openFile);
     if(res){
         statusBar()->showMessage("Open Successful",2000);
@@ -190,7 +181,7 @@ void MainWindow::saveFileSlot(){
     bool res;
     if(curFilename==""){
     QString userFile=QFileDialog::getSaveFileName(this,"Save Document",".",
-                                    "Text File(*.txt);;Rich Text Document(*.rtf)");
+                                    "Text File(*.txt);;Rich Text Document(*.rtf);; CPP FIle (*.cpp)");
     res=fileOperate(userFile,saveFile);
     }
     else{
@@ -208,7 +199,7 @@ void MainWindow::saveFileSlot(){
 void MainWindow::saveAsFileSlot(){
     bool res;
     QString userFile=QFileDialog::getSaveFileName(this,"Save Document",".",
-                                    "Text File(*.txt);;Rich Text Document(*.rtf)");
+                                    "Text File(*.txt);;Rich Text Document(*.rtf);; CPP FIle (*.cpp)");
     res=fileOperate(userFile,saveFile);
     if(res){
         statusBar()->showMessage("Save Successful",2000);
